@@ -1,7 +1,5 @@
 package com.example.quan_bui.simplereactive;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,18 +8,10 @@ import java.util.List;
  */
 public class Person {
 
-    @SerializedName("id")
-    @Expose
     private int id;
-    @SerializedName("name")
-    @Expose
     private String name;
-    @SerializedName("age")
-    @Expose
     private int age;
 
-    @SerializedName("person")
-    @Expose
     private List<Person> people = new ArrayList<>();
 
     public List<Person> getPeople() {
@@ -32,7 +22,7 @@ public class Person {
         this.people = person;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 

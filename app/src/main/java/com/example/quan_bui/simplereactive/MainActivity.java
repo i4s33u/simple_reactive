@@ -1,31 +1,24 @@
 package com.example.quan_bui.simplereactive;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
-import java.util.concurrent.TimeUnit;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
+import com.google.gson.Gson;
+import java.util.ArrayList;
+import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONException;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class MainActivity
     extends AppCompatActivity {
 
-    public static final String END_POINT = "http://jsonplaceholder.typicode.com";
-
-    WebService service;
-
-    RxJavaCallAdapterFactory rxAdapter =
-        RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
-
-    Retrofit retrofit = new Retrofit.Builder().addConverterFactory(GsonConverterFactory.create())
-        .baseUrl(END_POINT)
-        .addCallAdapterFactory(rxAdapter)
-        .build();
+    final String stringToParse =
+        "[{\"id\":1,\"name\":\"Quan Bui\",\"age\":25},{\"id\":2,\"name\":\"Blah Blah\",\"age\":26},{\"id\":3,\"name\":\"Dr Who\",\"age\":999},{\"id\":4,\"name\":\"Sherlock Holmes\",\"age\":54}]";
 
     RecyclerView rv;
 
@@ -36,6 +29,8 @@ public class MainActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Gson gson = new Gson();
 
         rv = (RecyclerView) findViewById(R.id.rv);
         if (rv != null) {
@@ -49,17 +44,25 @@ public class MainActivity
 
         if (btnReset != null) {
             btnReset.setOnClickListener(v -> {
-
                 btnReset.setText("Reset Data");
-                service = retrofit.create(WebService.class);
+                try {
+                    JSONArray jsonArray = new JSONArray(stringToParse);
+                    List<Person> list = new ArrayList<>();
+                    List<Person> people = new ArrayList<>();
 
-                service.getPosts()
-                    .delay(2,TimeUnit.SECONDS)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(posts -> {
-                        rv.setAdapter(new CardAdapter(posts));
-                    });
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        list.add(gson.fromJson(jsonArray.getString(i), Person.class));
+                    }
+
+                    Observable.from(list)
+                        .filter(person -> person.getAge() > 100)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .map(people::add)
+                        .subscribe(person -> rv.setAdapter(new PeopleAdapter(people)));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             });
         }
     }

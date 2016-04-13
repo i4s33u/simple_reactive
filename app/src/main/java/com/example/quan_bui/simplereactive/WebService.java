@@ -2,7 +2,6 @@ package com.example.quan_bui.simplereactive;
 
 import java.util.List;
 import retrofit2.http.Body;
-import retrofit2.http.GET;
 import retrofit2.http.POST;
 import rx.Observable;
 
@@ -11,7 +10,6 @@ import rx.Observable;
  */
 public interface WebService {
 
-    @GET("/posts")
     Observable<List<Post>> getPosts();
 
     @POST("/persons/add/{info}")
