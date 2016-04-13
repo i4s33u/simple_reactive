@@ -55,10 +55,8 @@ public class MainActivity
                     }
 
                     Observable.from(list)
-                        .filter(person -> person.getAge() > 100)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .map(people::add)
+                        .subscribeOn(Schedulers.io()).observeOn(Schedulers.computation())
+                        .map(people::add).observeOn(AndroidSchedulers.mainThread())
                         .subscribe(person -> rv.setAdapter(new PeopleAdapter(people)));
                 } catch (JSONException e) {
                     e.printStackTrace();
