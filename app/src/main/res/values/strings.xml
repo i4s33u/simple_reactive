@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Simple Reactive</string>
+    <string name="button_add">Add</string>
+    <string name="button_update">Update</string>
+    <string name="button_delete">Delete</string>
+</resources>
