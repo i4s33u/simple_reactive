@@ -14,6 +14,12 @@ public class Person {
 
     private List<Person> people = new ArrayList<>();
 
+    public Person(Person person) {
+        id = person.getId();
+        name = person.getName();
+        age = person.getAge();
+    }
+
     public List<Person> getPeople() {
         return people;
     }

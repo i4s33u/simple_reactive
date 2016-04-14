@@ -47,6 +47,16 @@ public class PeopleAdapter
         notifyItemRangeChanged(position, people.size());
     }
 
+    public void removeAll() {
+        people.clear();
+        notifyDataSetChanged();
+    }
+
+    public void add(Person person) {
+        people.add(getItemCount(), person);
+        notifyItemInserted(getItemCount());
+    }
+
     class ViewHolder
         extends RecyclerView.ViewHolder {
         public TextView tvName;
