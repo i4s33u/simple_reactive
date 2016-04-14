@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +27,8 @@ public class MainActivity
     RecyclerView rv;
 
     Button btnAdd;
-    Button btnReset;
-    TextView tvSubscribeThread;
-    TextView tvObserveThread;
+    Button btnShow;
+    TextView tvThread;
 
     List<Person> list = new ArrayList<>();
 
@@ -53,41 +53,19 @@ public class MainActivity
         adapter = new PeopleAdapter(list);
 
         btnAdd = (Button) findViewById(R.id.btnAdd);
-        btnReset = (Button) findViewById(R.id.btnReset);
-        tvSubscribeThread = (TextView) findViewById(R.id.tvSubscribeThread);
-        tvObserveThread = (TextView) findViewById(R.id.tvObserveThread);
-
-        btnReset.setOnClickListener(v -> {
-
-            getPeopleFromString(stringToParse).subscribeOn(Schedulers.from(executor))
-                .observeOn(UIThread.getScheduler())
-                .subscribe(new Subscriber<Person>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onNext(Person person) {
-                        rv.setAdapter(adapter);
-                        tvObserveThread.setText("Operate: " + Thread.currentThread().getName());
-                    }
-                });
-        });
+        btnShow = (Button) findViewById(R.id.btnShow);
+        tvThread = (TextView) findViewById(R.id.tvThread);
 
         btnAdd.setOnClickListener(v -> {
 
-            getPeopleFromString(stringToParse).subscribeOn(Schedulers.from(executor))
+            getDataFromString(stringToParse).subscribeOn(Schedulers.from(executor))
                 .observeOn(Schedulers.from(executor))
                 .subscribe(new Subscriber<Person>() {
                     @Override
                     public void onCompleted() {
-
+                        Toast.makeText(getApplicationContext(),
+                                       "Do in background",
+                                       Toast.LENGTH_LONG).show();
                     }
 
                     @Override
@@ -98,25 +76,48 @@ public class MainActivity
                     @Override
                     public void onNext(Person person) {
                         list.add(person);
-                        tvObserveThread.setText("Operate: " + Thread.currentThread().getName());
+                        tvThread.setText("Operate On: " + Thread.currentThread().getName());
+                    }
+                });
+        });
+
+        btnShow.setOnClickListener(v -> {
+
+            Observable.from(list)
+                .observeOn(UIThread.getScheduler())
+                .subscribe(new Subscriber<Person>() {
+                    @Override
+                    public void onCompleted() {
+                        Toast.makeText(getApplicationContext(),
+                                       "Do in UI Thread",
+                                       Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(Person person) {
+                        rv.setAdapter(adapter);
+                        tvThread.setText("Operate On: " + Thread.currentThread().getName());
                     }
                 });
         });
     }
 
-    public Observable<Person> getPeopleFromString(String jsonString) {
-        Person[] person;
+    public Observable<Person> getDataFromString(String jsonString) {
         try {
             JSONArray jsonArray = new JSONArray(jsonString);
-            person = new Person[jsonArray.length()];
             Observable<Person> personObservable =
                 Observable.create(new Observable.OnSubscribe<Person>() {
                     @Override
                     public void call(Subscriber<? super Person> subscriber) {
                         for (int i = 0; i < jsonArray.length(); i++) {
                             try {
-                                subscriber.onNext(person[i] = gson.fromJson(jsonArray.getString(i),
-                                                                            Person.class));
+                                subscriber.onNext(gson.fromJson(jsonArray.getString(i),
+                                                                Person.class));
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }

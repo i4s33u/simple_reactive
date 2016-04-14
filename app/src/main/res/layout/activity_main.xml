@@ -7,16 +7,7 @@
               tools:context="com.example.quan_bui.simplereactive.MainActivity">
 
     <TextView
-        android:id="@+id/tvSubscribeThread"
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:layout_marginTop="5dp"
-        android:gravity="center_horizontal"
-        android:text="Current Thread Name"
-        android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/tvObserveThread"
+        android:id="@+id/tvThread"
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:layout_marginTop="5dp"
@@ -34,13 +25,13 @@
             android:id="@+id/btnAdd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/button_add" />
+            android:text="Add data" />
 
         <Button
-            android:id="@+id/btnReset"
+            android:id="@+id/btnShow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Reset" />
+            android:text="Show Data" />
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
